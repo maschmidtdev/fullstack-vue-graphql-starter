@@ -33,7 +33,6 @@
 </template>
 
 <script>
-// import { gql } from "apollo-boost";
 import { mapGetters } from "vuex";
 
 export default {
@@ -50,20 +49,6 @@ export default {
       this.$store.dispatch("getPosts");
     }
   }
-  // apollo: {
-  //   getPosts: {
-  //     query: gql`
-  //       query {
-  //         getPosts {
-  //           _id
-  //           title
-  //           imageUrl
-  //           description
-  //         }
-  //       }
-  //     `
-  //   }
-  // }
 };
 </script>
 
