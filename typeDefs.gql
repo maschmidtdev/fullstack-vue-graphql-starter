@@ -2,6 +2,7 @@ type Query {
   getUser(username: String!): User
   getUsers: [User]
   getPosts: [Post]
+  getCurrentUser: User
 }
 
 type Mutation {

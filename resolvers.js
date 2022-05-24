@@ -22,6 +22,16 @@ module.exports = {
       }
       return users;
     },
+    getCurrentUser: async (_, args, { User, currentUser}) => {
+      if(!currentUser){
+        return null
+      }
+      const user  = await User.findOne({username: currentUser.username}).populate({
+        path: 'favorites',
+        model: 'Post'
+      })
+      return user;
+    },
     getPosts: async (_, __, { Post }) => {
       const posts = await Post.find({}).sort({ createdDate: 'desc' }).populate({
         path: 'createdBy',
