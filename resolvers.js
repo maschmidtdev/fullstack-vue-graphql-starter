@@ -57,6 +57,7 @@ module.exports = {
     },
     signinUser: async(_, {username, password}, {User}) => {
       const user = await User.findOne({username})
+      
       if(!user){
         throw new Error('User not found')
       }

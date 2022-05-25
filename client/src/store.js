@@ -1,5 +1,6 @@
 import Vue from "vue";
 import Vuex from "vuex";
+import router from "./router";
 import { defaultClient as apolloClient } from "./main";
 import { GET_POSTS, SIGNIN_USER, GET_CURRENT_USER } from "./queries";
 
@@ -8,11 +9,15 @@ Vue.use(Vuex);
 export default new Vuex.Store({
   state: {
     posts: [],
+    user: null,
     loading: false
   },
   mutations: {
     setPosts: (state, payload) => {
       state.posts = payload;
+    },
+    setUser: (state, payload) => {
+      state.user = payload;
     },
     setLoading: (state, payload) => {
       state.loading = payload;
@@ -26,8 +31,10 @@ export default new Vuex.Store({
           query: GET_CURRENT_USER
         })
         .then(({ data }) => {
-          console.log(data.getCurrentUser);
           commit("setLoading", false);
+          // Add user data to state
+          commit("setUser", data.getCurrentUser);
+          console.log(data.getCurrentUser);
         })
         .catch(err => {
           console.error(err);
@@ -60,14 +67,27 @@ export default new Vuex.Store({
         })
         .then(({ data }) => {
           localStorage.setItem("token", data.signinUser.token);
+          // to make sure created method is run in main.js (we run getCurrentUser) reload the page
+          router.go();
         })
         .catch(err => {
           console.error(err);
         });
+      // apolloClient
+      //   .query({
+      //     query: GET_POSTS
+      //   })
+      //   .then(({ data }) => {
+      //     console.log("data", data);
+      //   })
+      //   .catch(err => {
+      //     console.error(err);
+      //   });
     }
   },
   getters: {
     posts: state => state.posts,
+    user: state => state.user,
     loading: state => state.loading
   }
 });
