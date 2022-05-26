@@ -6,6 +6,10 @@ import vuetify from "./plugins/vuetify";
 import "@babel/polyfill";
 import ApolloClient from "apollo-boost";
 import VueApollo from "vue-apollo";
+import FormAlert from "./components/Shared/FormAlert.vue";
+
+// Register global component
+Vue.component("form-alert", FormAlert);
 
 Vue.use(VueApollo);
 
@@ -31,7 +35,7 @@ export const defaultClient = new ApolloClient({
   },
   onError: ({ graphQLErrors, networkError }) => {
     if (networkError) {
-      console.log("[networkError]", networkError);
+      console.error("[networkError]", networkError);
     }
 
     if (graphQLErrors) {
@@ -54,6 +58,6 @@ new Vue({
   render: h => h(App),
   created() {
     // execute getCurrentUser query
-    this.$store.dispatch('getCurrentUser') 
+    this.$store.dispatch("getCurrentUser");
   }
 }).$mount("#app");
