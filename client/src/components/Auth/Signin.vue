@@ -90,11 +90,8 @@ export default {
   data() {
     return {
       isFormValid: true,
-      // TODO empty default data
       username: "",
       password: "",
-      // username: "Jeff",
-      // password: "jeff",
       usernameRules: [
         // Chefk if username in input
         username => !!username || "Username is required",
