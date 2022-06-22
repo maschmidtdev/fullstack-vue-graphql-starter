@@ -100,6 +100,37 @@
         <transition name="fade">
           <router-view />
         </transition>
+
+        <!-- Auth Snackbar -->
+        <v-snackbar
+          timeout="5000"
+          color="success"
+          bottom
+          left
+          v-model="authSnackbar"
+        >
+          <v-icon class="mr-3">mdi-check-circle</v-icon>
+          <span>
+            Vou are now signed in!
+          </span>
+          <v-btn dark text @click="authSnackbar = false">Close</v-btn>
+        </v-snackbar>
+
+        <!-- Auth Error Snackbar -->
+        <v-snackbar
+          timeout="5000"
+          color="info"
+          bottom
+          left
+          v-if="authError"
+          v-model="authErrorSnackbar"
+        >
+          <v-icon class="mr-3">mdi-cancel</v-icon>
+          <span>
+            {{ authError.message }}
+          </span>
+          <v-btn dark text to="/signin">Signin</v-btn>
+        </v-snackbar>
       </v-container>
     </v-main>
   </v-app>
@@ -112,11 +143,27 @@ export default {
   name: "App",
   data() {
     return {
-      sideNav: false
+      sideNav: false,
+      authSnackbar: false,
+      authErrorSnackbar: false
     };
   },
+  watch: {
+    user(_, oldVal) {
+      // if we have no value for user before, show snackbar
+      if (oldVal === null) {
+        this.authSnackbar = true;
+      }
+    },
+    authError(value) {
+      // If auth error is not null, show auth error snackbar
+      if (value !== null) {
+        this.authErrorSnackbar = true;
+      }
+    }
+  },
   computed: {
-    ...mapGetters(["user"]),
+    ...mapGetters(["user", "authError"]),
     horizontalNavItems() {
       let items = [
         { icon: "mdi-lock-open", title: "Sign In", link: "/signin" },

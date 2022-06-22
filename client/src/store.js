@@ -2,7 +2,12 @@ import Vue from "vue";
 import Vuex from "vuex";
 import router from "./router";
 import { defaultClient as apolloClient } from "./main";
-import { GET_POSTS, SIGNIN_USER, GET_CURRENT_USER } from "./queries";
+import {
+  GET_POSTS,
+  SIGNIN_USER,
+  GET_CURRENT_USER,
+  SIGNUP_USER
+} from "./queries";
 
 Vue.use(Vuex);
 
@@ -11,7 +16,8 @@ export default new Vuex.Store({
     posts: [],
     user: null,
     loading: false,
-    error: null
+    error: null,
+    authError: null
   },
   mutations: {
     setPosts: (state, payload) => {
@@ -25,6 +31,9 @@ export default new Vuex.Store({
     },
     setError: (state, payload) => {
       state.error = payload;
+    },
+    setAuthError: (state, payload) => {
+      state.authError = payload;
     },
     clearUser: state => (state.user = null),
     clearError: state => (state.error = null)
@@ -66,19 +75,40 @@ export default new Vuex.Store({
     },
     signinUser: ({ commit }, payload) => {
       commit("clearError");
-      // clear token to prevent errors (if malformed)
-      localStorage.setItem("token", "");
+      commit("setLoading", true);
       apolloClient
         .mutate({
           mutation: SIGNIN_USER,
           variables: payload
         })
         .then(({ data }) => {
+          commit("setLoading", false);
           localStorage.setItem("token", data.signinUser.token);
           // to make sure created method is run in main.js (we run getCurrentUser) reload the page
           router.go();
         })
         .catch(err => {
+          commit("setLoading", false);
+          commit("setError", err);
+          console.error(err);
+        });
+    },
+    signupUser: ({ commit }, payload) => {
+      commit("clearError");
+      commit("setLoading", true);
+      apolloClient
+        .mutate({
+          mutation: SIGNUP_USER,
+          variables: payload
+        })
+        .then(({ data }) => {
+          commit("setLoading", false);
+          localStorage.setItem("token", data.signupUser.token);
+          // to make sure created method is run in main.js (we run getCurrentUser) reload the page
+          router.go();
+        })
+        .catch(err => {
+          commit("setLoading", false);
           commit("setError", err);
           console.error(err);
         });
@@ -91,13 +121,14 @@ export default new Vuex.Store({
       // end session
       await apolloClient.resetStore();
       // redirect home - kick users out of private pages (i.e. profile)
-      router.push("/");
+      // router.push("/");
     }
   },
   getters: {
     posts: state => state.posts,
     user: state => state.user,
     loading: state => state.loading,
-    error: state => state.error
+    error: state => state.error,
+    authError: state => state.authError
   }
 });

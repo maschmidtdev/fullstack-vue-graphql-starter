@@ -28,7 +28,7 @@ mongoose
   .catch((err) => console.error(err));
 
 // Verify JWT token passed from client
-const getUser =async token => {
+const getUser = async token => {
   if(token){
     try {
       return await jwt.verify(token, process.env.SECRET)
@@ -42,6 +42,10 @@ const getUser =async token => {
 const server = new ApolloServer({
   typeDefs,
   resolvers,
+  formatError: error => ({
+    name: error.name,
+    message: error.message.replace('Context creation failed:', '')
+  }),
   context: async ({ req }) => {
     const token = (req.headers['authorization']);
     return { User, Post, currentUser: await getUser(token) };

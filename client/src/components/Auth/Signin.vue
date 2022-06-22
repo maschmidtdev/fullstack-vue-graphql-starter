@@ -19,10 +19,16 @@
       <v-flex xs12 sm6 offset-sm3>
         <v-card color="secondary" dark class="pa-3">
           <v-container>
-            <v-form @submit.prevent="handleSigninUser">
+            <v-form
+              v-model="isFormValid"
+              lazy-validation
+              ref="form"
+              @submit.prevent="handleSigninUser"
+            >
               <v-layout row>
                 <v-flex xs12>
                   <v-text-field
+                    :rules="usernameRules"
                     v-model="username"
                     prepend-icon="mdi-account"
                     label="Username"
@@ -36,6 +42,7 @@
               <v-layout row>
                 <v-flex xs12>
                   <v-text-field
+                    :rules="passwordRules"
                     v-model="password"
                     prepend-icon="mdi-puzzle"
                     label="Password"
@@ -48,7 +55,19 @@
 
               <v-layout row>
                 <v-flex xs12>
-                  <v-btn color="accent" type="submit">Signin</v-btn>
+                  <v-btn
+                    :loading="loading"
+                    :disabled="!isFormValid || loading"
+                    color="accent"
+                    type="submit"
+                  >
+                    <template v-slot:loader>
+                      <span class="custom-loader">
+                        <v-icon light>mdi-cached</v-icon>
+                      </span>
+                    </template>
+                    Signin
+                  </v-btn>
                   <h3>
                     Dont't have an account?
                     <router-link to="/signup">Signup</router-link>
@@ -70,15 +89,29 @@ export default {
   name: "Signin",
   data() {
     return {
+      isFormValid: true,
       // TODO empty default data
-      // username: "",
-      // password: ""
-      username: "Jeff",
-      password: "jeff"
+      username: "",
+      password: "",
+      // username: "Jeff",
+      // password: "jeff",
+      usernameRules: [
+        // Chefk if username in input
+        username => !!username || "Username is required",
+        // Make sure username is less than 10 characters
+        username =>
+          username.length < 10 || "Username must be less than 10 characters"
+      ],
+      passwordRules: [
+        password => !!password || "Password is required",
+        // Make sure password is at least 4 characters
+        password =>
+          password.length >= 4 || "Password must be at least 4 characters"
+      ]
     };
   },
   computed: {
-    ...mapGetters(["user", "error"])
+    ...mapGetters(["user", "error", "loading"])
   },
   watch: {
     user(value) {
@@ -90,11 +123,52 @@ export default {
   },
   methods: {
     handleSigninUser() {
-      this.$store.dispatch("signinUser", {
-        username: this.username,
-        password: this.password
-      });
+      if (this.$refs.form.validate()) {
+        this.$store.dispatch("signinUser", {
+          username: this.username,
+          password: this.password
+        });
+      }
     }
   }
 };
 </script>
+
+<style>
+.custom-loader {
+  animation: loader 1s infinite;
+  display: flex;
+}
+@-moz-keyframes loader {
+  from {
+    transform: rotate(0);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+@-webkit-keyframes loader {
+  from {
+    transform: rotate(0);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+@-o-keyframes loader {
+  from {
+    transform: rotate(0);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+@keyframes loader {
+  from {
+    transform: rotate(0);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+</style>
