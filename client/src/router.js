@@ -16,14 +16,15 @@ export default new Router({
   routes: [
     {
       path: "/",
-      name: "home",
+      name: "Home",
       component: Home,
       beforeEnter: AuthGuard
     },
     {
       path: "/posts",
       name: "Posts",
-      component: Posts
+      component: Posts,
+      beforeEnter: AuthGuard
     },
     {
       path: "/post/add",

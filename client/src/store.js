@@ -74,7 +74,7 @@ export default new Vuex.Store({
           console.error(err);
         });
     },
-    addPost: ({ commit }, payload) => {
+    addPost: (_, payload) => {
       apolloClient
         .mutate({
           mutation: ADD_POST,
@@ -155,7 +155,7 @@ export default new Vuex.Store({
       // end session
       await apolloClient.resetStore();
       // redirect home - kick users out of private pages (i.e. profile)
-      // router.push("/");
+      router.push("/");
     }
   },
   getters: {

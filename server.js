@@ -33,6 +33,7 @@ const getUser = async token => {
     try {
       return await jwt.verify(token, process.env.SECRET)
     } catch (err) {
+      // TODO: sign out user, auth guards
       throw new AuthenticationError('Your session has ended. Please sign in again.')
     }
   }
